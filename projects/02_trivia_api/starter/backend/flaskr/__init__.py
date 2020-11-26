@@ -245,6 +245,12 @@ def create_app(test_config=None):
           nextQuestion["difficulty"]=question.difficulty
           break  
 
+      if (nextQuestion == {}):
+        return jsonify(
+        {
+          "success": True          
+        }
+      )
       return jsonify(
         {
           "success": True,
