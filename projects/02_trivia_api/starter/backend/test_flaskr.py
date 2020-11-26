@@ -76,6 +76,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['categories'])
 
+    def test_showcategories_aborts404_whenrequestFails(self):
+        res = self.client().get('/categories/5')
+        data=json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], "Not Found")    
+
     
     def test_delete_question(self):
         res = self.client().delete('/questions/2')
@@ -93,8 +101,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Not Found')
-    
+        self.assertEqual(data['message'], 'Not Found')    
     
     def test_create_new_question(self):
         res=self.client().post('/newquestion', json=self.newquestion)
@@ -106,17 +113,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(self.newquestion['question'], insertedquestion.question)
         self.assertEqual(self.newquestion['answer'], insertedquestion.answer)
         self.assertEqual(int(self.newquestion['category']), insertedquestion.category)
-        self.assertEqual(int(self.newquestion['difficulty']), insertedquestion.difficulty)
+        self.assertEqual(int(self.newquestion['difficulty']), insertedquestion.difficulty)    
     
-    
-    def test_createquestion_aborts422_emptybody(self):
+    def test_createquestion_aborts400_emptybody(self):
         res=self.client().post('/newquestion', json=self.emptynewquestion)
         data=json.loads(res.data)        
-        self.assertEqual(res.status_code, 422)
+        self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Unprocessable Request')
-
-    
+        self.assertEqual(data['message'], 'Bad Request')    
 
     def test_show_questions_search_term(self):
         res=self.client().post('/questions', json={"searchTerm":"auto", "currentCategory":"3"})
@@ -127,6 +131,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])        
         self.assertTrue(data['current_category'])
         self.assertTrue(data['total_questions'])
+
+    def test_show_questions_search_term_aborts500_when_requestfails(self):
+        res=self.client().post('/questions')
+        data=json.loads(res.data)
+
+        self.assertEqual(res.status_code, 500)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], "Internal Server Error")    
 
     def test_show_category_questions(self):
         res = self.client().get('/categories/1/questions')
