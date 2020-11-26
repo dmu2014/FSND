@@ -76,13 +76,13 @@ class QuestionView extends Component {
     })
   }
 
-  submitSearch = (searchTerm) => {
+  submitSearch = (searchTerm, currentCategory) => {
     $.ajax({
       url: `/questions`, //TODO: update request URL
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({searchTerm: searchTerm}),
+      data: JSON.stringify({searchTerm: searchTerm, currentCategory:this.state.currentCategory}),
       xhrFields: {
         withCredentials: true
       },
@@ -123,9 +123,9 @@ class QuestionView extends Component {
     return (
       <div className="question-view">
         <div className="categories-list">
-          <h2 onClick={() => {this.getQuestions()}}>Categories</h2>
+          <h2 onClick={() => {this.getQuestions()}}>Categories</h2>         
           <ul>
-            {Object.keys(this.state.categories).map((id, ) => (
+            {Object.keys(this.state.categories).map((id, ind) => (
               <li key={id} onClick={() => {this.getByCategory(id)}}>
                 {this.state.categories[id]}
                 <img className="category" src={`${this.state.categories[id]}.svg`}/>
@@ -135,17 +135,17 @@ class QuestionView extends Component {
           <Search submitSearch={this.submitSearch}/>
         </div>
         <div className="questions-list">
-          <h2>Questions</h2>
-          {this.state.questions.map((q, ind) => (
+          <h2>Questions</h2>          
+          {this.state.questions.map((q, ind) => (                    
             <Question
-              key={q.id}
+              key={q.id}              
               question={q.question}
               answer={q.answer}
               category={this.state.categories[q.category]} 
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
             />
-          ))}
+          ))}          
           <div className="pagination-menu">
             {this.createPagination()}
           </div>
